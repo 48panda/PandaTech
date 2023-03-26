@@ -1,0 +1,27 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "colorful_biomes:block/yellow_piston"
+    },
+    "facing=east": {
+      "model": "colorful_biomes:block/yellow_piston",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "colorful_biomes:block/yellow_piston",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "colorful_biomes:block/yellow_piston",
+      "y": 270
+    },
+    "facing=up": {
+      "model": "colorful_biomes:block/yellow_piston",
+      "x": 270
+    },
+    "facing=down": {
+      "model": "colorful_biomes:block/yellow_piston",
+      "x": 90
+    }
+  }
+}

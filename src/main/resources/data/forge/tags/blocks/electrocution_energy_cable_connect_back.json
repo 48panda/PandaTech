@@ -1,0 +1,9 @@
+{
+  "replace": false,
+  "values": [
+    "colorful_biomes:test_generator",
+    "colorful_biomes:test_consumer",
+    "colorful_biomes:electric_furnace",
+    "colorful_biomes:burner_generator"
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "parent": "block/cube",
+  "textures": {
+    "down": "colorful_biomes:blocks/green_piston_base",
+    "up": "colorful_biomes:blocks/green_piston_base",
+    "north": "colorful_biomes:blocks/green_piston_front",
+    "east": "colorful_biomes:blocks/green_piston_base",
+    "south": "colorful_biomes:blocks/green_piston_base",
+    "west": "colorful_biomes:blocks/green_piston_base",
+    "particle": "colorful_biomes:blocks/green_piston_base"
+  }
+}

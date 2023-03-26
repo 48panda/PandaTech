@@ -1,0 +1,7 @@
+{
+  "parent": "block/cube_all",
+  "textures": {
+    "all": "colorful_biomes:blocks/controller",
+    "particle": "colorful_biomes:blocks/controller"
+  }
+}
