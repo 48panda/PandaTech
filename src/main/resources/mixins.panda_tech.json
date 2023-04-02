@@ -1,0 +1,12 @@
+{
+  "package": "com._48panda.tech.mixin",
+  "refmap": "mixins.panda_tech.refmap.json",
+  "mixins": [
+    "BlockStatePropertiesMixin",
+    "IForgeBlockMixin",
+    "LevelMixin",
+    "RedStoneWireBlockMixin"
+  ],
+  "client": [],
+  "server": []
+}

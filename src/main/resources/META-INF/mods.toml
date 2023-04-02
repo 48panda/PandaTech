@@ -3,14 +3,14 @@ loaderVersion="[40,)"
 license="Academic Free License v3.0"
 
 [[mods]]
-modId="colorful_biomes"
+modId="panda_tech"
 version="1.0.0"
-displayName="Colorful Biomes"
+displayName="PandaTech"
 credits="Created using mod maker MCreator - https://mcreator.net/about"
 displayURL="https://mcreator.net"
 authors="48panda"
 
-[[dependencies.colorful_biomes]]
+[[dependencies.panda_tech]]
     modId="minecraft"
     mandatory=true
     versionRange="[1.18.2]"
