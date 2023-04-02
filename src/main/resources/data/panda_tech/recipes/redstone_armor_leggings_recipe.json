@@ -1,0 +1,38 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "012",
+    "345",
+    "6 8"
+  ],
+  "key": {
+    "0": {
+      "item": "minecraft:redstone"
+    },
+    "1": {
+      "item": "minecraft:redstone"
+    },
+    "2": {
+      "item": "minecraft:redstone"
+    },
+    "3": {
+      "item": "minecraft:redstone"
+    },
+    "4": {
+      "item": "panda_tech:capacitor"
+    },
+    "5": {
+      "item": "minecraft:redstone"
+    },
+    "6": {
+      "item": "minecraft:redstone"
+    },
+    "8": {
+      "item": "minecraft:redstone"
+    }
+  },
+  "result": {
+    "item": "panda_tech:redstone_armor_leggings",
+    "count": 1
+  }
+}

@@ -1,0 +1,7 @@
+{
+  "parent": "block/cube_all",
+  "textures": {
+    "all": "panda_tech:block/controller",
+    "particle": "panda_tech:block/controller"
+  }
+}

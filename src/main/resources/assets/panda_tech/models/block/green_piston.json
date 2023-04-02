@@ -1,0 +1,12 @@
+{
+  "parent": "block/cube",
+  "textures": {
+    "down": "panda_tech:block/green_piston_base",
+    "up": "panda_tech:block/green_piston_base",
+    "north": "panda_tech:block/green_piston_front",
+    "east": "panda_tech:block/green_piston_base",
+    "south": "panda_tech:block/green_piston_base",
+    "west": "panda_tech:block/green_piston_base",
+    "particle": "panda_tech:block/green_piston_base"
+  }
+}

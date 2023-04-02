@@ -1,0 +1,31 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "012",
+    "345"
+  ],
+  "key": {
+    "0": {
+      "item": "minecraft:redstone"
+    },
+    "1": {
+      "item": "minecraft:redstone"
+    },
+    "2": {
+      "item": "minecraft:redstone"
+    },
+    "3": {
+      "item": "minecraft:redstone"
+    },
+    "4": {
+      "item": "panda_tech:capacitor"
+    },
+    "5": {
+      "item": "minecraft:redstone"
+    }
+  },
+  "result": {
+    "item": "panda_tech:redstone_armor_helmet",
+    "count": 1
+  }
+}
