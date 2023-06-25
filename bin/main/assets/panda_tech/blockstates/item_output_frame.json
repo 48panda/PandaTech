@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "has_multiblock=true": {
+        "model": "panda_tech:block/item_output_frame_on"
+    },
+    "has_multiblock=false": {
+      "model": "panda_tech:block/item_output_frame"
+    }
+  }
+}

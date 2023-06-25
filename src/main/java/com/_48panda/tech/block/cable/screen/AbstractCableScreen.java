@@ -13,6 +13,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
+import org.jetbrains.annotations.NotNull;
 
 public abstract class AbstractCableScreen<T extends AbstractCableContainer> extends ExtendedContainerScreen<T> {
     protected ToggleImageButton locker;
@@ -25,7 +26,7 @@ public abstract class AbstractCableScreen<T extends AbstractCableContainer> exte
     }
 
     @Override
-    public void render(PoseStack stack, int mouseX, int mouseY, float partialTicks) {
+    public void render(@NotNull PoseStack stack, int mouseX, int mouseY, float partialTicks) {
         super.render(stack, mouseX, mouseY, partialTicks);
         locker.setOn(menu.data.get(1) == 1);
         hover(stack, new TranslatableComponent("container.panda_tech.cable.lock"), leftPos + 160, topPos + 5, 12, 12, mouseX, mouseY);
@@ -37,6 +38,7 @@ public abstract class AbstractCableScreen<T extends AbstractCableContainer> exte
         int x = menu.data.get(2);
         int y = menu.data.get(3);
         int z = menu.data.get(4);
+        assert Minecraft.getInstance().level != null; // Again, if this happens we have bigger problems but this shuts up the warnings so cool.
         if (Minecraft.getInstance().level.isClientSide()) {
             PandaTechMessages.sendToServer(new SetLockedC2SPacket(new BlockPos(x, y, z), dir, isLocked));
         }

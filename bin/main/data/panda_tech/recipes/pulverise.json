@@ -1,0 +1,11 @@
+{
+  "type": "panda_tech:pulveriser",
+  "ingredients": [
+    {
+      "item": "minecraft:cobblestone"
+    }
+  ],
+  "output": {
+    "item": "minecraft:gravel"
+  }
+}

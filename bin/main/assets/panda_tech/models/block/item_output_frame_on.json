@@ -1,0 +1,7 @@
+{
+  "parent": "panda_tech:multiblock/frame",
+  "textures": {
+    "0": "panda_tech:block/frame_item_out_side",
+    "particle": "panda_tech:block/frame_item_out_side"
+  }
+}

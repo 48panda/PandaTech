@@ -1,0 +1,10 @@
+{
+  "replace": false,
+  "values": [
+    "panda_tech:raw_coal_block",
+    "panda_tech:raw_diamond_block",
+    "panda_tech:raw_emerald_block",
+    "panda_tech:raw_lapis_block",
+    "panda_tech:raw_redstone_block"
+  ]
+}

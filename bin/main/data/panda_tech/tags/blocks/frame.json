@@ -1,0 +1,9 @@
+{
+  "replace": false,
+  "values": [
+    "panda_tech:empty_frame",
+    "panda_tech:energy_frame",
+    "panda_tech:item_input_frame",
+    "panda_tech:item_output_frame"
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "panda_tech:block/solar_panel"
+    },
+    "facing=east": {
+      "model": "panda_tech:block/solar_panel",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "panda_tech:block/solar_panel",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "panda_tech:block/solar_panel",
+      "y": 270
+    }
+  }
+}

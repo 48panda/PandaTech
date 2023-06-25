@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "panda_tech:block/robot"
+    },
+    "facing=east": {
+      "model": "panda_tech:block/robot",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "panda_tech:block/robot",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "panda_tech:block/robot",
+      "y": 270
+    }
+  }
+}
