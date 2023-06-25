@@ -2,7 +2,6 @@ package com._48panda.tech.block.machines.burner_generator;
 
 import com._48panda.tech.ItemHelper;
 import com._48panda.tech.block.machines.AugmentableMachineBlockEntity;
-import com._48panda.tech.block.machines.MachineBlockEntity;
 import com._48panda.tech.block.machines.MachineProperties;
 import com._48panda.tech.block.machines.MachineContainerData;
 import net.minecraft.core.BlockPos;
@@ -10,36 +9,38 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.inventory.MenuConstructor;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeType;
-import net.minecraft.world.item.crafting.SmeltingRecipe;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.ForgeHooks;
 import net.minecraftforge.items.ItemStackHandler;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Optional;
+import java.util.Objects;
 
 public class BurnerGeneratorBlockEntity extends AugmentableMachineBlockEntity {
     private int burnTime;
     private int maxBurnTime;
     private int litCooldown;
-    private Optional<SmeltingRecipe> prevRecipe;
+    private double fractionalEnergy;
+
     public BurnerGeneratorBlockEntity(BlockPos pos, BlockState state) {
         super(pos, state, MachineProperties.BURNER_GENERATOR);
         burnTime = 0;
         maxBurnTime = 1;
         litCooldown = 0;
-        prevRecipe = Optional.empty();
+        fractionalEnergy = 0;
     }
 
     @Override
     public void tick() {
         super.tick();
         if (burnTime > 0) {
-            int energyRate = (int)(5 * getAugmentedEfficiencyMultiplier());
-            int energyRecieved = energyStorage.receiveEnergy(energyRate, true);
-            if (energyRecieved == energyRate) {
+            double energyRate = 5 * getAugmentedEfficiencyMultiplier() + fractionalEnergy;
+            fractionalEnergy = energyRate % 1;
+            int flow = (int) Math.floor(energyRate);
+            int energyRecieved = energyStorage.receiveEnergy(flow, true);
+            if (energyRecieved == flow) {
                 litCooldown = 60;
-                energyStorage.receiveEnergy(energyRate, false);
+                energyStorage.receiveEnergy(flow, false);
                 burnTime--;
             }
         }
@@ -59,8 +60,8 @@ public class BurnerGeneratorBlockEntity extends AugmentableMachineBlockEntity {
         boolean wasLit = state.getValue(BurnerGeneratorBlock.LIT);
         if (lit != wasLit) {
             setChanged();
-            state = state.setValue(BurnerGeneratorBlock.LIT, Boolean.valueOf(lit));
-            getLevel().setBlockAndUpdate(getBlockPos(), state);
+            state = state.setValue(BurnerGeneratorBlock.LIT, lit);
+            Objects.requireNonNull(getLevel()).setBlockAndUpdate(getBlockPos(), state);
             setChanged(getLevel(), getBlockPos(), state);
         }
     }
@@ -98,6 +99,7 @@ public class BurnerGeneratorBlockEntity extends AugmentableMachineBlockEntity {
         tag.putInt("burnTime", burnTime);
         tag.putInt("maxBurnTime", maxBurnTime);
         tag.putInt("litCooldown", litCooldown);
+        tag.putDouble("fractionalEnergy", fractionalEnergy);
     }
 
     @Override
@@ -106,6 +108,7 @@ public class BurnerGeneratorBlockEntity extends AugmentableMachineBlockEntity {
         burnTime = tag.getInt("burnTime");
         maxBurnTime = tag.getInt("maxBurnTime");
         litCooldown = tag.getInt("litCooldown");
+        fractionalEnergy = tag.getDouble("fractionalEnergy");
     }
 
     @Override

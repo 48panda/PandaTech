@@ -2,8 +2,8 @@ package com._48panda.tech.block.machines;
 
 import com._48panda.tech.PandaTech;
 import com._48panda.tech.MyEnergyStorage;
-import com._48panda.tech.block.entity.EnergyBlockEntity;
-import com._48panda.tech.block.entity.TickableBlockEntity;
+import com._48panda.tech.block.entity.IEnergyBlockEntity;
+import com._48panda.tech.block.entity.ITickableBlockEntity;
 import com._48panda.tech.block.entity.InventoryBlockEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -20,10 +20,9 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.energy.CapabilityEnergy;
-import net.minecraftforge.items.CapabilityItemHandler;
 import org.jetbrains.annotations.NotNull;
 
-public abstract class MachineBlockEntity extends InventoryBlockEntity implements EnergyBlockEntity, TickableBlockEntity {
+public abstract class MachineBlockEntity extends InventoryBlockEntity implements IEnergyBlockEntity, ITickableBlockEntity {
     public final Component TITLE;
     protected final MachineProperties properties;
     protected MyEnergyStorage energyStorage;
@@ -39,7 +38,9 @@ public abstract class MachineBlockEntity extends InventoryBlockEntity implements
             }
         };
     }
+    @SuppressWarnings("unused")
     public void neighborChanged(BlockState blockstate, Level world, BlockPos pos, Block neighborBlock, BlockPos fromPos, boolean moving) {}
+    @SuppressWarnings("unused")
     public void onPlace(BlockState blockstate, Level world, BlockPos pos, BlockState oldState, boolean moving) {}
     public abstract MenuConstructor getServerContainer(BlockPos pos);
     public abstract int getData(int key);
@@ -62,11 +63,6 @@ public abstract class MachineBlockEntity extends InventoryBlockEntity implements
     @Override
     public void setEnergyCapacity(int capacity) {
         energyStorage.setCapacity(capacity);
-    }
-
-    @Override
-    public int getMaxInput() {
-        return properties.inputRate();
     }
 
     @Override
@@ -93,11 +89,8 @@ public abstract class MachineBlockEntity extends InventoryBlockEntity implements
 
     @Override
     public @NotNull <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap, Direction direction) {
-        if (cap == CapabilityEnergy.ENERGY && direction.equals(getBlockState().getValue(HorizontalDirectionalBlock.FACING).getOpposite())) {
+        if (cap == CapabilityEnergy.ENERGY && (direction == null || direction.equals(getBlockState().getValue(HorizontalDirectionalBlock.FACING).getOpposite()))) {
             return LazyOptional.of(()->energyStorage).cast();
-        }
-        if (cap == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
-            
         }
         return super.getCapability(cap, direction);
     }

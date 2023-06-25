@@ -1,7 +1,5 @@
 package com._48panda.tech.block.cable;
 
-import com._48panda.tech.Pair;
-import com._48panda.tech.Triple;
 import com._48panda.tech.block.cable.type.CableType;
 import com._48panda.tech.block.entity.SimpleBlockEntityTicker;
 import com._48panda.tech.block.cable.entity.AbstractCableBlockEntity;
@@ -45,12 +43,13 @@ import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraftforge.network.NetworkHooks;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+@SuppressWarnings("ALL")
 public abstract class AbstractCableBlock extends Block implements SimpleWaterloggedBlock, EntityBlock {
     public static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
     public static final EnumProperty<ConnectionType> UP = EnumProperty.create("up", ConnectionType.class);
@@ -74,24 +73,6 @@ public abstract class AbstractCableBlock extends Block implements SimpleWaterlog
     protected static final VoxelShape SHAPE_EAST = Block.box(sm, sm, sm, top, lg, lg);
     public CableType<?> type;
 
-    private static final List<Triple<VoxelShape, EnumProperty<ConnectionType>, Direction>> SHAPES = Arrays.asList(
-            new Triple<>(SHAPE_NORTH, NORTH, Direction.NORTH),
-            new Triple<>(SHAPE_SOUTH, SOUTH, Direction.SOUTH),
-            new Triple<>(SHAPE_WEST, WEST, Direction.WEST),
-            new Triple<>(SHAPE_EAST, EAST, Direction.EAST),
-            new Triple<>(SHAPE_UP, UP, Direction.UP),
-            new Triple<>(SHAPE_DOWN, DOWN, Direction.DOWN)
-    );
-
-    private static final List<Pair<VoxelShape, Direction>> EXTRACT_SHAPES = Arrays.asList(
-            new Pair<>(SHAPE_NORTH, Direction.NORTH),
-            new Pair<>(SHAPE_SOUTH, Direction.SOUTH),
-            new Pair<>(SHAPE_WEST, Direction.WEST),
-            new Pair<>(SHAPE_EAST, Direction.EAST),
-            new Pair<>(SHAPE_UP, Direction.UP),
-            new Pair<>(SHAPE_DOWN, Direction.DOWN)
-    );
-
     public AbstractCableBlock(CableType<?> cableType) {
         super(BlockBehaviour.Properties.of(Material.WOOL).sound(SoundType.WOOL).strength(1f, 1f).noOcclusion()
                 .isRedstoneConductor((bs, br, bp) -> false));
@@ -107,8 +88,9 @@ public abstract class AbstractCableBlock extends Block implements SimpleWaterlog
     }
     
     
+    @SuppressWarnings("deprecation")
     @Override
-    public VoxelShape getShape(BlockState state, BlockGetter world, BlockPos pos, CollisionContext context) {
+    public @NotNull VoxelShape getShape(BlockState state, @NotNull BlockGetter world, @NotNull BlockPos pos, @NotNull CollisionContext context) {
         VoxelShape shape = SHAPE_CORE;
         if (state.getValue(UP).isConnected()) {
             shape = Shapes.joinUnoptimized(shape, SHAPE_UP, BooleanOp.OR);
@@ -142,78 +124,14 @@ public abstract class AbstractCableBlock extends Block implements SimpleWaterlog
         builder.add(WEST);
     }
 
+    @SuppressWarnings("deprecation")
     @Override
-    public void neighborChanged(BlockState blockstate, Level world, BlockPos pos, Block neighborBlock, BlockPos fromPos, boolean moving) {
+    public void neighborChanged(@NotNull BlockState blockstate, @NotNull Level world, @NotNull BlockPos pos, @NotNull Block neighborBlock, @NotNull BlockPos fromPos, boolean moving) {
         AbstractCableBlockEntity.markCablesDirty(world, pos);
         BlockState newstate = getState(world, pos, blockstate);
         world.setBlock(pos, newstate, 3);
     }
-    public float getBlockReachDistance(Player player) {
-        float distance = (float) player.getAttribute(net.minecraftforge.common.ForgeMod.REACH_DISTANCE.get()).getValue();
-        return player.isCreative() ? distance : distance - 0.5F;
-    }
-    private double checkShape(BlockState state, BlockGetter world, BlockPos pos, Vec3 start, Vec3 end, VoxelShape shape, EnumProperty<ConnectionType> direction) {
-        if (direction != null && !state.getValue(direction).isConnected()) {
-            return Double.MAX_VALUE;
-        }
-        BlockHitResult blockRayTraceResult = world.clipWithInteractionOverride(start, end, pos, shape, state);
-        if (blockRayTraceResult == null) {
-            return Double.MAX_VALUE;
-        }
-        return blockRayTraceResult.getLocation().distanceTo(start);
-    }
-
-    private double checkShape(BlockState state, BlockGetter world, BlockPos pos, Vec3 start, Vec3 end, VoxelShape shape,
-                              @Nullable AbstractCableBlockEntity pipe, Direction side) {
-        if (pipe != null && !pipe.isExtracting(side)) {
-            return Double.MAX_VALUE;
-        }
-        BlockHitResult blockRayTraceResult = world.clipWithInteractionOverride(start, end, pos, shape, state);
-        if (blockRayTraceResult == null) {
-            return Double.MAX_VALUE;
-        }
-        return blockRayTraceResult.getLocation().distanceTo(start);
-    }
-    public Pair<Direction, VoxelShape> getSelection(BlockState state, BlockGetter blockReader, BlockPos pos, Player player) {
-        Vec3 start = player.getEyePosition(1F);
-        Vec3 end = start.add(player.getLookAngle().normalize().scale(getBlockReachDistance(player)));
-
-        Direction direction = null;
-        VoxelShape selection = null;
-        double shortest = Double.MAX_VALUE;
-
-        double d = checkShape(state, blockReader, pos, start, end, SHAPE_CORE, null);
-        if (d < shortest) {
-            shortest = d;
-        }
-
-        if (!(blockReader instanceof LevelAccessor)) {
-            return new Pair<>(null, null);
-        }
-
-        AbstractCableBlockEntity pipe = getBlockEntity((LevelAccessor) blockReader, pos);
-
-        for (int i = 0; i < Direction.values().length; i++) {
-            Pair<VoxelShape, Direction> extract = EXTRACT_SHAPES.get(i);
-            Triple<VoxelShape, EnumProperty<ConnectionType>, Direction> shape = SHAPES.get(i);
-            if (pipe != null && pipe.isExtracting(extract.b)) {
-                d = checkShape(state, blockReader, pos, start, end, extract.a, pipe, extract.b);
-                if (d < shortest) {
-                    shortest = d;
-                    direction = extract.b;
-                    selection = extract.a;
-                }
-            } else {
-                d = checkShape(state, blockReader, pos, start, end, shape.a, shape.b);
-                if (d < shortest) {
-                    shortest = d;
-                    direction = shape.c;
-                    selection = shape.a;
-                }
-            }
-        }
-        return new Pair<>(direction, selection);
-    }
+    
     @Override
     public BlockState getStateForPlacement(BlockPlaceContext context) {
         boolean flag = context.getLevel().getFluidState(context.getClickedPos()).getType() == Fluids.WATER;
@@ -274,13 +192,12 @@ public abstract class AbstractCableBlock extends Block implements SimpleWaterlog
         Vec3 hitLoc = hit.getLocation();
         
         Vec3 blockpos = new Vec3(pos.getX(), pos.getY(), pos.getZ());
-        if (!level.isClientSide()) {
+        if (!level.isClientSide() && hand.equals(InteractionHand.MAIN_HAND)) {
             System.out.println(hand);
             Vec3 clickPos = hitLoc.subtract(blockpos).subtract(0.5,0.5,0.5);
             double absX = Math.abs(clickPos.x);
             double absY = Math.abs(clickPos.y);
             double absZ = Math.abs(clickPos.z);
-            double mag;
             Direction dir;
             if (absX > absY && absX > absZ) {
                 if (clickPos.x > 0) {
@@ -305,6 +222,7 @@ public abstract class AbstractCableBlock extends Block implements SimpleWaterlog
                 if (level.getBlockEntity(pos) instanceof AbstractCableBlockEntity be) {
                     if (!be.getIsLocked(dir)) {
                         wrench(state, level, pos, dir);
+                        return InteractionResult.SUCCESS;
                     }
                 };
             } else if (player.getItemInHand(hand).isEmpty() || player.getItemInHand(hand).is(Items.AIR)) {
@@ -312,14 +230,13 @@ public abstract class AbstractCableBlock extends Block implements SimpleWaterlog
                     if (level.getBlockEntity(pos) instanceof final AbstractCableBlockEntity block) {
                         MenuProvider container = new SimpleMenuProvider(block.getServerContainer(pos, dir), block.title);
                         NetworkHooks.openGui((ServerPlayer) player, container, pos);
+                        return InteractionResult.SUCCESS;
                     }
                 }
-            } else {
-                return InteractionResult.PASS;
             }
-            return InteractionResult.SUCCESS;
+            return InteractionResult.PASS;
         }
-        return InteractionResult.SUCCESS;
+        return InteractionResult.PASS;
     }
     
     

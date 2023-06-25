@@ -1,0 +1,12 @@
+{
+  "type": "panda_tech:pulveriser",
+  "ingredients": [
+    {
+      "item": "RAW_ID"
+    }
+  ],
+  "output": {
+    "item": "DUST_ID",
+    "count": 2
+  }
+}

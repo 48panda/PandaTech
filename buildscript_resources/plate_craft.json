@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "ii",
+    "ii"
+  ],
+  "key": {
+    "i": {
+      "item": "INGOT_ID"
+    }
+  },
+  "result": {
+    "item": "PLATE_ID",
+    "count": 2
+  }
+}

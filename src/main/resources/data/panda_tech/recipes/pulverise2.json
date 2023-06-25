@@ -1,0 +1,11 @@
+{
+  "type": "panda_tech:pulveriser",
+  "ingredients": [
+    {
+      "item": "minecraft:iron_ingot"
+    }
+  ],
+  "output": {
+    "item": "panda_tech:iron_dust"
+  }
+}

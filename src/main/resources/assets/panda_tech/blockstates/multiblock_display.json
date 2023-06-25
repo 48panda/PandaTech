@@ -1,0 +1,16 @@
+{
+  "variants": {
+    "display=pulveriser": {
+      "model": "panda_tech:multiblock/pulveriser"
+    },
+    "display=pulveriser_piston": {
+      "model": "panda_tech:multiblock/pulveriser_piston"
+    },
+    "display=centrifuge": {
+      "model": "panda_tech:multiblock/centrifuge"
+    },
+    "display=centrifuge_arm": {
+      "model": "panda_tech:multiblock/centrifuge_arm"
+    }
+  }
+}

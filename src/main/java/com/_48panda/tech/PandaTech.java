@@ -14,12 +14,13 @@
 package com._48panda.tech;
 
 import com._48panda.tech.block.copper_infused.CopperInfusedRedstoneWire;
+import com._48panda.tech.client.block.render.CentrifugeRenderer;
+import com._48panda.tech.client.block.render.PulveriserRenderer;
 import com._48panda.tech.init.*;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.RedStoneWireBlock;
 import net.minecraftforge.client.event.ColorHandlerEvent;
+import net.minecraftforge.client.event.EntityRenderersEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import org.apache.logging.log4j.Logger;
@@ -35,13 +36,13 @@ import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.network.FriendlyByteBuf;
 
-import java.awt.*;
 import java.util.function.Supplier;
 import java.util.function.Function;
 import java.util.function.BiConsumer;
-
+@Mod.EventBusSubscriber
 @Mod("panda_tech")
 public class PandaTech {
+	@SuppressWarnings("unused")
 	public static final Logger LOGGER = LogManager.getLogger(PandaTech.class);
 	public static final String MODID = "panda_tech";
 	private static final String PROTOCOL_VERSION = "1";
@@ -59,10 +60,14 @@ public class PandaTech {
 
 		PandaTechMobEffects.REGISTRY.register(bus);
 		
+		PandaTechRecipes.register(bus);
+		
 		bus.addListener(this::commonSetup);
 		bus.addListener(this::registerBlockColors);
 		
 		bus.addListener(this::clientSetup);
+		
+		bus.addListener(this::registerBlockEntityRenderers);
 
 	}
 
@@ -76,12 +81,20 @@ public class PandaTech {
 		ItemBlockRenderTypes.setRenderLayer(PandaTechBlocks.COPPER_INFUSED_REDSTONE_TORCH_WALL.get(), RenderType.cutout());
 		ItemBlockRenderTypes.setRenderLayer(PandaTechBlocks.COPPER_INFUSED_REPEATER.get(), RenderType.cutout());
 		ItemBlockRenderTypes.setRenderLayer(PandaTechBlocks.COPPER_INFUSED_COMPARATOR.get(), RenderType.cutout());
+		ItemBlockRenderTypes.setRenderLayer(PandaTechBlocks.HIGH_DENSITY_GLASS.get(), RenderType.cutout());
 	}
 	private void commonSetup(final FMLCommonSetupEvent event) {
 		event.enqueueWork(() -> {
 			PandaTechMessages.register();
+			PandaTechMultiblocks.init();
 		});
 	}
+	
+	private void registerBlockEntityRenderers(final EntityRenderersEvent.RegisterRenderers event) {
+		event.registerBlockEntityRenderer(PandaTechBlockEntities.PULVERISER.get(), PulveriserRenderer::new);
+		event.registerBlockEntityRenderer(PandaTechBlockEntities.CENTRIFUGE.get(), CentrifugeRenderer::new);
+	}
+	
 	public static <T> void addNetworkMessage(Class<T> messageType, BiConsumer<T, FriendlyByteBuf> encoder, Function<FriendlyByteBuf, T> decoder,
 			BiConsumer<T, Supplier<NetworkEvent.Context>> messageConsumer) {
 		PACKET_HANDLER.registerMessage(messageID, messageType, encoder, decoder, messageConsumer);

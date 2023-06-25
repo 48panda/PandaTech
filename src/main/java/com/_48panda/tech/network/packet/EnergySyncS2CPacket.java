@@ -1,6 +1,6 @@
 package com._48panda.tech.network.packet;
 
-import com._48panda.tech.block.entity.EnergyBlockEntity;
+import com._48panda.tech.block.entity.IEnergyBlockEntity;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
@@ -12,6 +12,7 @@ public class EnergySyncS2CPacket {
     private final int energy;
     private final BlockPos pos;
     
+    @SuppressWarnings("unused")
     public EnergySyncS2CPacket(int energy, BlockPos pos) {
         this.energy = energy;
         this.pos = pos;
@@ -30,7 +31,8 @@ public class EnergySyncS2CPacket {
     public boolean handle(Supplier<NetworkEvent.Context> supplier) {
         NetworkEvent.Context context = supplier.get();
         context.enqueueWork(() -> {
-            if (Minecraft.getInstance().level.getBlockEntity(pos) instanceof EnergyBlockEntity blockEntity) {
+            assert Minecraft.getInstance().level != null; // Again, if this happens we have bigger problems but this shuts up the warnings so cool.
+            if (Minecraft.getInstance().level.getBlockEntity(pos) instanceof IEnergyBlockEntity blockEntity) {
                 blockEntity.setEnergyLevel(energy);
             }
         });

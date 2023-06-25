@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "has_multiblock=true": {
+        "model": "panda_tech:block/empty"
+    },
+    "has_multiblock=false": {
+      "model": "panda_tech:block/empty_frame"
+    }
+  }
+}

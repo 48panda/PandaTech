@@ -1,0 +1,11 @@
+{
+  "variants": {
+    "has_multiblock=true": {
+      "model": "panda_tech:block/empty"
+    },
+    "has_multiblock=false": {
+      "model": "minecraft:block/glass",
+      "x": 90
+    }
+  }
+}

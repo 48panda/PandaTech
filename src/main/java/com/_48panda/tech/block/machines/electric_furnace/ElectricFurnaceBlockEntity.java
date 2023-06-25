@@ -1,7 +1,6 @@
 package com._48panda.tech.block.machines.electric_furnace;
 
 import com._48panda.tech.block.machines.AugmentableMachineBlockEntity;
-import com._48panda.tech.block.machines.MachineBlockEntity;
 import com._48panda.tech.block.machines.MachineContainerData;
 import com._48panda.tech.block.machines.MachineProperties;
 import net.minecraft.core.*;
@@ -17,6 +16,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.items.ItemStackHandler;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Objects;
 import java.util.Optional;
 
 public class ElectricFurnaceBlockEntity extends AugmentableMachineBlockEntity {
@@ -24,6 +24,7 @@ public class ElectricFurnaceBlockEntity extends AugmentableMachineBlockEntity {
     private int maxProgress;
     private int litCooldown;
     private Optional<SmeltingRecipe> prevRecipe;
+    private double fractionalEnergy;
     public ElectricFurnaceBlockEntity(BlockPos pos, BlockState state) {
         super(pos, state, MachineProperties.ELECTRIC_FURNACE);
         progress = 0;
@@ -53,8 +54,9 @@ public class ElectricFurnaceBlockEntity extends AugmentableMachineBlockEntity {
 
             @Override
             public boolean isItemValid(int slot, @NotNull ItemStack stack) {
-                return super.isItemValid(slot, stack) && 
-                        level.getRecipeManager().getRecipeFor(RecipeType.SMELTING, new SimpleContainer(stack), level).isPresent();
+                if (!super.isItemValid(slot, stack)) return false;
+                assert level != null;  // Again, if this happens we have bigger problems but this shuts up the warnings so cool.
+                return level.getRecipeManager().getRecipeFor(RecipeType.SMELTING, new SimpleContainer(stack), level).isPresent();
             }
         };
     }
@@ -64,12 +66,15 @@ public class ElectricFurnaceBlockEntity extends AugmentableMachineBlockEntity {
         if (litCooldown > 0) {
             litCooldown--;
         }
+        assert level != null; // Again, if this happens we have bigger problems but this shuts up the warnings so cool.
         Optional<SmeltingRecipe> recipe = level.getRecipeManager().getRecipeFor(RecipeType.SMELTING, new SimpleContainer(inventory.getStackInSlot(0)), level);
         if (recipe.isPresent()) {
             maxProgress = (int)(recipe.get().getCookingTime() / getAugmentedSpeedMultiplier());
-            int toExtract = (int)(10 / getAugmentedEfficiencyMultiplier());
+            double flowRate = 10 / getAugmentedEfficiencyMultiplier() + fractionalEnergy;
+            fractionalEnergy = flowRate % 1;
+            int toExtract = (int) Math.floor(flowRate);
             if (prevRecipe.isPresent()) {
-                if (recipe.isEmpty()||!prevRecipe.get().equals(recipe.get())) {
+                if (!prevRecipe.get().equals(recipe.get())) {
                     progress = 0;
                 }
             }
@@ -102,8 +107,8 @@ public class ElectricFurnaceBlockEntity extends AugmentableMachineBlockEntity {
         boolean wasLit = state.getValue(ElectricFurnaceBlock.LIT);
         if (lit != wasLit) {
             setChanged();
-            state = state.setValue(ElectricFurnaceBlock.LIT, Boolean.valueOf(lit));
-            getLevel().setBlockAndUpdate(getBlockPos(), state);
+            state = state.setValue(ElectricFurnaceBlock.LIT, lit);
+            Objects.requireNonNull(getLevel()).setBlockAndUpdate(getBlockPos(), state);
             setChanged(getLevel(), getBlockPos(), state);
         }
     }
@@ -114,6 +119,7 @@ public class ElectricFurnaceBlockEntity extends AugmentableMachineBlockEntity {
         tag.putInt("progress", progress);
         tag.putInt("progressMax", maxProgress);
         tag.putInt("litCooldown", litCooldown);
+        tag.putDouble("fractionalEnergy", fractionalEnergy);
     }
 
     @Override
@@ -122,6 +128,7 @@ public class ElectricFurnaceBlockEntity extends AugmentableMachineBlockEntity {
         progress = tag.getInt("progress");
         maxProgress = tag.getInt("progressMax");
         litCooldown = tag.getInt("litCooldown");
+        fractionalEnergy = tag.getDouble("fractionalEnergy");
     }
 
     @Override

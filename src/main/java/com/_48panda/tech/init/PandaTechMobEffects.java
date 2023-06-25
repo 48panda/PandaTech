@@ -10,10 +10,10 @@ import net.minecraftforge.registries.DeferredRegister;
 
 import net.minecraft.world.effect.MobEffect;
 
-import com._48panda.tech.procedures.potion.ElectocutedMobEffect;
+import com._48panda.tech.potion.ElectocutedMobEffect;
 import com._48panda.tech.PandaTech;
 
 public class PandaTechMobEffects {
 	public static final DeferredRegister<MobEffect> REGISTRY = DeferredRegister.create(ForgeRegistries.MOB_EFFECTS, PandaTech.MODID);
-	public static final RegistryObject<MobEffect> ELECTOCUTED = REGISTRY.register("electocuted", () -> new ElectocutedMobEffect());
+	public static final RegistryObject<MobEffect> ELECTOCUTED = REGISTRY.register("electocuted", ElectocutedMobEffect::new);
 }

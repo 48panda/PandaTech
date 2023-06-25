@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:block/cube_all",
+  "textures": {
+    "all": "panda_tech:block/BLOCK_ID_WITHOUT_COLON"
+  }
+}

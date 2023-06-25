@@ -3,7 +3,7 @@ package com._48panda.tech.block.cable.entity;
 import com._48panda.tech.block.cable.AbstractCableBlock;
 import com._48panda.tech.block.cable.Connection;
 import com._48panda.tech.block.entity.InventoryBlockEntity;
-import com._48panda.tech.block.entity.TickableBlockEntity;
+import com._48panda.tech.block.entity.ITickableBlockEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
@@ -17,15 +17,14 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.CapabilityItemHandler;
-import org.checkerframework.checker.units.qual.C;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 
-public abstract class AbstractCableBlockEntity extends InventoryBlockEntity implements TickableBlockEntity {
+public abstract class AbstractCableBlockEntity extends InventoryBlockEntity implements ITickableBlockEntity {
     public final Component title;
     protected List<Connection> connectionCache;
-    private Map<Direction, Boolean> isLocked;
+    private final Map<Direction, Boolean> isLocked;
     public AbstractCableBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state, Component title) {
         super(type, pos, state, 1);
         this.title = title;
@@ -37,6 +36,7 @@ public abstract class AbstractCableBlockEntity extends InventoryBlockEntity impl
 
     @Override
     public void tick() {
+        assert level != null; // Again, if this happens we have bigger problems but this shuts up the warnings so cool.
         if (level.isClientSide()) {
             return;
         }
@@ -52,10 +52,9 @@ public abstract class AbstractCableBlockEntity extends InventoryBlockEntity impl
         List<BlockPos> travelPositions = new ArrayList<>();
         LinkedList<BlockPos> queue = new LinkedList<>();
         Block block = world.getBlockState(pos).getBlock();
-        if (!(block instanceof AbstractCableBlock)) {
+        if (!(block instanceof AbstractCableBlock pipeBlock)) {
             return;
         }
-        AbstractCableBlock pipeBlock = (AbstractCableBlock) block;
         travelPositions.add(pos);
         addToDirtyList(world, pos, pipeBlock, travelPositions, queue);
         while (queue.size() > 0) {
@@ -67,10 +66,9 @@ public abstract class AbstractCableBlockEntity extends InventoryBlockEntity impl
         }
         for (BlockPos p : travelPositions) {
             BlockEntity te = world.getBlockEntity(p);
-            if (!(te instanceof AbstractCableBlockEntity)) {
+            if (!(te instanceof AbstractCableBlockEntity pipe)) {
                 continue;
             }
-            AbstractCableBlockEntity pipe = (AbstractCableBlockEntity) te;
             pipe.connectionCache = null;
         }
     }
@@ -136,6 +134,7 @@ public abstract class AbstractCableBlockEntity extends InventoryBlockEntity impl
         connectionCache = connections.entrySet().stream().map(x->x.getKey().with(x.getValue())).toList();
     }
     public void enqueue(Map<BlockPos, Integer> queue, BlockPos pos, List<BlockPos> visited, int distance, Map<Connection, Integer> connections) {
+        assert level != null; // Again, if this happens we have bigger problems but this shuts up the warnings so cool.
         Block block = level.getBlockState(pos).getBlock();
         if (block instanceof AbstractCableBlock cableBlock) {
             for (Direction d: Direction.values()) {
@@ -187,6 +186,7 @@ public abstract class AbstractCableBlockEntity extends InventoryBlockEntity impl
     }
 
     public void setLocked(Direction dir, boolean toLock) {
+        assert level != null;
         if (!level.isClientSide()) {
             isLocked.put(dir, toLock);
         }

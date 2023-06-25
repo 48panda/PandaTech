@@ -1,6 +1,6 @@
 package com._48panda.tech.block.machines;
 
-import com._48panda.tech.block.entity.TickableBlockEntity;
+import com._48panda.tech.block.entity.ITickableBlockEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerPlayer;
@@ -20,31 +20,41 @@ import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraftforge.network.NetworkHooks;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collections;
 import java.util.List;
 
+@SuppressWarnings("ALL")
 public abstract class Machine extends HorizontalDirectionalBlock 
     implements EntityBlock {
-    private Class container;
     protected Machine(Properties properties) {
         super(properties);
         registerDefaultState(defaultBlockState().setValue(FACING, Direction.NORTH));
     }
 
+    @SuppressWarnings("deprecation")
     @Override
-    public List<ItemStack> getDrops(BlockState state, LootContext.Builder builder) {
+    public @NotNull List<ItemStack> getDrops(BlockState state, LootContext.@NotNull Builder builder) {
         return Collections.singletonList(new ItemStack(state.getBlock(), 1));
     }
 
+    @SuppressWarnings("deprecation")
     @Override
-    public InteractionResult use(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
-        if (!world.isClientSide && world.getBlockEntity(pos) instanceof final MachineBlockEntity furnace) {
-            MenuProvider container = new SimpleMenuProvider(furnace.getServerContainer(pos), furnace.TITLE);
-            NetworkHooks.openGui((ServerPlayer)player, container, pos);
+    public @NotNull InteractionResult use(@NotNull BlockState state, @NotNull Level world, @NotNull BlockPos pos, @NotNull Player player, @NotNull InteractionHand hand, @NotNull BlockHitResult hitResult) {
+        if (shouldOpen(state, world, pos, player, hand, hitResult)) {
+            if (!world.isClientSide && world.getBlockEntity(pos) instanceof final MachineBlockEntity furnace) {
+                MenuProvider container = new SimpleMenuProvider(furnace.getServerContainer(pos), furnace.TITLE);
+                NetworkHooks.openGui((ServerPlayer) player, container, pos);
+            }
+            return InteractionResult.SUCCESS;
         }
-        return InteractionResult.SUCCESS;
+        return InteractionResult.PASS;
+    }
+    
+    protected boolean shouldOpen(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
+        return true;
     }
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> pBuilder) {
@@ -88,7 +98,7 @@ public abstract class Machine extends HorizontalDirectionalBlock
     @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> blockEntityType) {
         return level.isClientSide()? null : ($0, pos, $1, blockEntity) -> {
-            if (blockEntity instanceof TickableBlockEntity entity) {
+            if (blockEntity instanceof ITickableBlockEntity entity) {
                 entity.tick();
             }
         };

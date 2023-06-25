@@ -1,6 +1,5 @@
 package com._48panda.tech.network.client.gui;
 
-import com._48panda.tech.block.cable.screen.AbstractCableScreen;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
@@ -10,6 +9,7 @@ import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.AbstractContainerMenu;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 import java.util.Optional;
@@ -23,7 +23,7 @@ public class ExtendedContainerScreen<T extends AbstractContainerMenu> extends Ab
     }
 
     @Override
-    protected void renderBg(PoseStack stack, float partialTicks, int mouseX, int mouseY) {
+    protected void renderBg(@NotNull PoseStack stack, float partialTicks, int mouseX, int mouseY) {
         renderBackground(stack);
         bindTexture(texture);
         blit(stack, leftPos, topPos, 0, 0, imageWidth, imageHeight);
@@ -37,18 +37,19 @@ public class ExtendedContainerScreen<T extends AbstractContainerMenu> extends Ab
         RenderSystem.setShaderTexture(0, tex);
     }
     @Override
-    public void render(PoseStack stack, int mouseX, int mouseY, float partialTicks) {
+    public void render(@NotNull PoseStack stack, int mouseX, int mouseY, float partialTicks) {
         super.render(stack, mouseX, mouseY, partialTicks);
         //this.font.draw(stack, title, leftPos + 7, topPos + 5, 0x404040);
         //this.font.draw(stack, playerInventoryTitle, this.leftPos + 7, this.topPos + 74, 0x404040);
         
     }
     public void drawFractionWithFullHover(PoseStack stack, int x, int y, int u, int v, int w, int h, int numerator, int denominator, boolean doHorizontal,
-                                          int mouseX, int mouseY, boolean startBottomOrRight, boolean inverse) {
+                                          int mouseX, int mouseY, boolean startBottomOrRight, boolean inverse, boolean doHover) {
         float percent = (float)numerator / (float)denominator;
         if (inverse) {
             percent = 1f - percent;
         }
+        percent = Math.min(1, Math.max(percent, 0));
         int imWidth = w;
         int imHeight = h;
         if (doHorizontal) {
@@ -58,16 +59,22 @@ public class ExtendedContainerScreen<T extends AbstractContainerMenu> extends Ab
         }
         int imX = x;
         int imY = y;
+        int imU = u;
+        int imV = v;
         if (startBottomOrRight) {
             if (doHorizontal) {
                 imX = imX + w - imWidth;
+                imU = imU + w - imWidth;
             } else {
                 imY = imY + h - imHeight;
+                imV = imV + h - imHeight;
             }
         }
         bindTexture(texture);
-        blit(stack, leftPos + imX, topPos + imY, u, v, imWidth, imHeight);
-        hover(stack, new TextComponent(Integer.toString(numerator) + " / " + Integer.toString(denominator)), leftPos + x, topPos + y, w, h, mouseX, mouseY);
+        blit(stack, leftPos + imX, topPos + imY, imU, imV, imWidth, imHeight);
+        if (doHover) {
+            hover(stack, new TextComponent(numerator + " / " +denominator), leftPos + x, topPos + y, w, h, mouseX, mouseY);
+        }
 
     }
     public void hover(PoseStack stack, Component toShow, int x, int y, int w, int h, int mouseX, int mouseY) {

@@ -17,9 +17,212 @@ plugins {
 apply plugin: 'net.minecraftforge.gradle'
 apply plugin: 'org.spongepowered.mixin'
 
-version = '1.0'
-group = 'com._48panda.electricity' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
-archivesBaseName = 'electricity'
+version = '0.00.01'
+group = 'com._48panda.tech' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
+//archivesBaseName = 'PandaTech'
+
+static Set<String> allOres() { return Set.of ('coal', 'copper', 'iron', 'gold', 'lapis', 'redstone', 'diamond', 'emerald',
+        'tin', 'zinc', 'cobalt', 'nickel', 'titanium', 'aluminium') }
+static Set<String> hasRaw() { return Set.of ('copper', 'iron', 'gold') }
+static Set<String> hasOre() { return Set.of('coal', 'copper', 'iron', 'gold', 'lapis', 'redstone', 'diamond', 'emerald')}
+static Set<String> hasDust() { return Set.of ('redstone') } // (in vanilla minecraft)
+static Set<String> hasIngotOfAnyType() { return Set.of('coal', 'copper', 'iron', 'gold', 'lapis', 'redstone', 'diamond', 'emerald')}
+static Set<String> isIngot() { return Set.of ('copper', 'iron', 'gold',
+        'tin', 'zinc', 'cobalt', 'nickel', 'titanium', 'aluminium') }
+static Set<String> hasPlate() {return Set.of('copper', 'iron', 'gold', 'lapis', 'redstone', 'diamond', 'emerald',
+        'tin', 'zinc', 'cobalt', 'nickel', 'titanium', 'aluminium')} //Not in vanilla, is being added
+static Set<String> isLazuli() { return Set.of ('lapis') }
+static Set<String> doesNotHaveIngot() { return Set.of ('redstone') }
+
+static String getDustId(String name) {
+    return (hasDust().contains(name) ? "minecraft" : "panda_tech") + ":" + name + (hasDust().contains(name) ? "" : "_dust")
+}
+
+static String getIngotId(String name) {
+    return (hasIngotOfAnyType().contains(name)?"minecraft:":"panda_tech:") + getIngot(name)
+}
+static String getIngot(String name) {
+    return isIngot().contains(name) ? name + "_ingot" : isLazuli().contains(name) ? name + "_lazuli" : name
+}
+
+static String getRawBlockId(String name) {
+    return getRawId(name) + "_block"
+}
+static String getRawId(String name) {
+    return (hasRaw().contains(name) ? "minecraft" : "panda_tech") + ":raw_" + name
+}
+static String getPlateId(String name, boolean withColon) {
+    return (withColon?"panda_tech:":"")+name+"_plate"
+}
+static String getRawBlockIdWithoutColon(String name) {
+    return getRawIdWithoutColon(name) + "_block"
+}
+static String getRawIdWithoutColon(String name) {
+    return "raw_" + name
+}
+
+static String getRawRecipeId(String name) {
+    return (hasRaw().contains(name) ? "minecraft" : "panda_tech") + ":" + (hasRaw().contains(name) ? "raw_" : "") + name + (hasRaw().contains(name) ? "":"_raw_to_block")
+}
+
+static String getRawBlockRecipeId(String name) {
+    return (hasRaw().contains(name) ? "minecraft" : "panda_tech") + ":" + (hasRaw().contains(name) ? "raw_" : "") + name + (hasRaw().contains(name) ? "_block":"_block_to_ingot")
+}
+
+static String getOreId(String name, boolean withColon, boolean isDeepslate) {
+    return (withColon?(hasOre().contains(name) ? "minecraft" : "panda_tech") + ":":"") + (isDeepslate ? "deepslate_" : "") + name + "_ore"
+}
+
+task generateResources() {
+    File minecraftRecipeDirectory = new File (buildDir, '/generatedResources/data/minecraft/recipes')
+    File myBlockModelDirectory = new File (buildDir, '/generatedResources/assets/panda_tech/models/block')
+    File myItemModelDirectory = new File (buildDir, '/generatedResources/assets/panda_tech/models/item')
+    File blockstateDirectory = new File (buildDir, '/generatedResources/assets/panda_tech/blockstates')
+    File lootTableDirectory = new File (buildDir, '/generatedResources/data/panda_tech/loot_tables/blocks')
+    File myRecipeDirectory = new File (buildDir, '/generatedResources/data/panda_tech/recipes')
+    File myEntryDirectory = new File (buildDir, '/generatedResources/data/panda_tech/patchouli_books/panda_tech_guide/en_us/entries')
+    File resources = new File ('buildscript_resources')
+    
+    doLast {
+        minecraftRecipeDirectory.mkdirs()
+        myBlockModelDirectory.mkdirs()
+        myItemModelDirectory.mkdirs()
+        blockstateDirectory.mkdirs()
+        lootTableDirectory.mkdirs()
+        myRecipeDirectory.mkdirs()
+        myEntryDirectory.mkdirs()
+        def lines = new File('crafting_recipes_to_ignore.txt').text.readLines()
+        for (line in lines) {
+            new File(minecraftRecipeDirectory, line).text = '{}'
+        }
+        
+        List<String> needsDust2Ingot = allOres().stream().filter(x->!(doesNotHaveIngot().contains(x))).toList()
+        def basic = new File(resources, 'dust_to_ingot.json').text
+        for (ore in needsDust2Ingot) {
+            new File(myRecipeDirectory, ore + ".json").text = basic
+                    .replace("INGOT_ID", getIngotId(ore))
+                    .replace("DUST_ID", getDustId(ore))
+                    .replace("INGOT", getIngot(ore))
+        }
+        
+        List<String> needsDustItemModel = allOres().stream().filter(x->!(hasDust().contains(x))).toList()
+        basic = new File(resources, "item_model.json").text
+        for (ore in needsDustItemModel) {
+            new File(myItemModelDirectory, ore + "_dust.json").text = basic
+                    .replace("ITEM_ID_WITHOUT_COLON", ore+"_dust")
+        }
+
+        List<String> needsRawItemModel = allOres().stream().filter(x->!(hasRaw().contains(x))).toList()
+        for (ore in needsRawItemModel) {
+            new File(myItemModelDirectory, "raw_" + ore + ".json").text = basic
+                    .replace("ITEM_ID_WITHOUT_COLON", "raw_"+ore)
+        }
+
+        List<String> needsIngotItemModel = allOres().stream().filter(x->!(hasIngotOfAnyType().contains(x))).toList()
+        for (ore in needsIngotItemModel) {
+            new File(myItemModelDirectory, ore + "_ingot.json").text = basic
+                    .replace("ITEM_ID_WITHOUT_COLON", ore+"_ingot")
+        }
+        
+        List<String> needsRaw2Dust = allOres().stream().toList()
+        basic = new File(resources, 'raw_to_dust.json').text
+        def basic2 = new File(resources, 'ore_entry.json').text
+        def basic3 = new File(resources, "smelt_raw.json").text
+        for (String ore: needsRaw2Dust) {
+            new File(myRecipeDirectory, ore + "_raw_to_dust.json").text = basic
+                .replace("DUST_ID", getDustId(ore))
+                .replace("RAW_ID", getRawId(ore))
+            new File(myEntryDirectory, ore + "_entry.json").text = basic2
+                    .replace("CAPITAL_ORE_NAME", ore.capitalize())
+                    .replace("RAW_RECIPE", getRawRecipeId(ore))
+                    .replace("RAW_BLOCK_RECIPE", getRawBlockRecipeId(ore))
+                    .replace("RAW_BLOCK_ID", getRawBlockId(ore))
+                    .replace("INGOT_ID", getIngotId(ore))
+                    .replace("DUST_ID", getDustId(ore))
+                    .replace("RAW_ID", getRawId(ore))
+            new File(myRecipeDirectory, ore + "_smelt_raw_to_dust.json").text = basic3
+                    .replace("DUST_ID", getDustId(ore))
+                    .replace("RAW_ID", getRawId(ore))
+        }
+        
+        basic = new File(resources, "plate_craft.json").text
+        basic2 = new File(resources, "item_model.json").text
+        for (ore in hasPlate().toList()) {
+            new File(myRecipeDirectory, ore+"_plate_craft.json").text = basic
+                    .replace("INGOT_ID", getIngotId(ore))
+                    .replace("PLATE_ID", getPlateId(ore, true))
+            new File(myItemModelDirectory, ore+"_plate.json").text = basic2
+                    .replace("ITEM_ID_WITHOUT_COLON", getPlateId(ore, false))
+
+        }
+        
+        List<String> needsOre = allOres().stream().filter(x->!(hasOre().contains(x))).toList()
+        basic = new File(resources, "static_blockstate.json").text
+        basic2 = new File(resources, "cube_model.json").text
+        basic3 = new File(resources, "block_item_model.json").text
+        def basic4 = new File(resources, "ore_loot_table.json").text
+        for (ore in needsOre) {
+            new File(blockstateDirectory, getOreId(ore, false, false)+".json").text = basic
+                    .replace("BLOCK_ID_WITHOUT_COLON", getOreId(ore, false, false))
+            new File(blockstateDirectory, getOreId(ore, false, true)+".json").text = basic
+                    .replace("BLOCK_ID_WITHOUT_COLON", getOreId(ore, false, true))
+            new File(myBlockModelDirectory, getOreId(ore, false, false)+".json").text = basic2
+                    .replace("BLOCK_ID_WITHOUT_COLON", getOreId(ore, false, false))
+            new File(myBlockModelDirectory, getOreId(ore, false, true)+".json").text = basic2
+                    .replace("BLOCK_ID_WITHOUT_COLON", getOreId(ore, false, true))
+            new File(myItemModelDirectory, getOreId(ore, false, false)+".json").text = basic3
+                    .replace("BLOCK_ID_WITHOUT_COLON", getOreId(ore, false, false))
+            new File(myItemModelDirectory, getOreId(ore, false, true)+".json").text = basic3
+                    .replace("BLOCK_ID_WITHOUT_COLON", getOreId(ore, false, true))
+            new File(lootTableDirectory, getOreId(ore, false, false)+".json").text = basic4
+                    .replace("RAW_ID", getRawId(ore))
+                    .replace("ORE_ID", getOreId(ore, true, false))
+            new File(lootTableDirectory, getOreId(ore, false, true)+".json").text = basic4
+                    .replace("RAW_ID", getRawId(ore))
+                    .replace("ORE_ID", getOreId(ore, true, true))
+        }
+        
+
+        List<String> needsBlock2Raw = allOres().stream().filter(x->!(hasRaw().contains(x))).toList()
+        basic = new File(resources, 'raw_from_block.json').text
+        basic2 = new File(resources, 'raw_to_block.json').text
+        basic3 = new File(resources, "raw_block_loot_table.json").text
+        basic4 = new File(resources, "static_blockstate.json").text
+        def basic5 = new File(resources, "cube_model.json").text
+        def basic6 = new File(resources, "block_item_model.json").text
+        for (ore in needsBlock2Raw) {
+            new File(myRecipeDirectory, ore + "_raw_to_block.json").text = basic
+                    .replace("RAW_BLOCK_ID", getRawBlockId(ore))
+                    .replace("RAW_ID", getRawId(ore))
+
+            new File(myRecipeDirectory, ore + "_block_to_ingot.json").text = basic2
+                    .replace("RAW_BLOCK_ID", getRawBlockId(ore))
+                    .replace("RAW_ID", getRawId(ore))
+            
+            new File(lootTableDirectory, getRawBlockIdWithoutColon(ore) + ".json").text = basic3
+                    .replace("RAW_BLOCK_ID", getRawBlockId(ore))
+
+            new File(blockstateDirectory, getRawBlockIdWithoutColon(ore) + ".json").text = basic4
+                    .replace("BLOCK_ID_WITHOUT_COLON", getRawBlockIdWithoutColon(ore))
+
+            new File(myBlockModelDirectory, getRawBlockIdWithoutColon(ore)+".json").text = basic5
+                    .replace("BLOCK_ID_WITHOUT_COLON", getRawBlockIdWithoutColon(ore))
+
+            new File(myItemModelDirectory, getRawBlockIdWithoutColon(ore)+".json").text = basic6
+                    .replace("BLOCK_ID_WITHOUT_COLON", getRawBlockIdWithoutColon(ore))
+        }
+    }
+}
+
+compileJava.dependsOn generateResources
+
+jar {
+    from new File(buildDir, '/generatedResources')
+}
+
+processResources {
+    from new File(buildDir, '/generatedResources')
+}
 
 // Mojang ships Java 17 to end users in 1.18+, so your mod should target Java 17.
 java.toolchain.languageVersion = JavaLanguageVersion.of(17)
@@ -146,6 +349,17 @@ repositories {
     // flatDir {
     //     dir 'libs'
     // }
+    maven { url 'https://maven.blamejared.com' }
+    maven {
+        // location of the maven that hosts JEI files
+        name = "Progwml6 maven"
+        url = "https://dvs1.progwml6.com/files/maven/"
+    }
+    maven {
+        // location of a maven mirror for JEI files, as a fallback
+        name = "ModMaven"
+        url = "https://modmaven.dev"
+    }
 }
 
 mixin {
@@ -173,6 +387,11 @@ dependencies {
     // Examples using mod jars from ./libs
     // implementation fg.deobf("blank:coolmod-${mc_version}:${coolmod_version}")
 
+    compileOnly fg.deobf("vazkii.patchouli:Patchouli:1.18.2-66:api")
+    runtimeOnly fg.deobf("vazkii.patchouli:Patchouli:1.18.2-66")
+
+    compileOnly fg.deobf("mezz.jei:jei-${mc_version}:${jei_version}:api")
+    runtimeOnly fg.deobf("mezz.jei:jei-${mc_version}:${jei_version}")
     // For more info...
     // http://www.gradle.org/docs/current/userguide/artifact_dependencies_tutorial.html
     // http://www.gradle.org/docs/current/userguide/dependency_management.html
@@ -182,12 +401,12 @@ dependencies {
 jar {
     manifest {
         attributes([
-                "Specification-Title"     : "examplemod",
-                "Specification-Vendor"    : "examplemodsareus",
+                "Specification-Title"     : "panda_tech",
+                "Specification-Vendor"    : "48panda",
                 "Specification-Version"   : "1", // We are version 1 of ourselves
                 "Implementation-Title"    : project.name,
                 "Implementation-Version"  : project.jar.archiveVersion,
-                "Implementation-Vendor"   : "examplemodsareus",
+                "Implementation-Vendor"   : "48panda",
                 "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
         ])
     }

@@ -12,7 +12,6 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.RedStoneWireBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
-import net.minecraft.world.level.block.state.properties.RedstoneSide;
 import net.minecraft.world.phys.Vec3;
 import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Final;
@@ -24,6 +23,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+@SuppressWarnings("ALL")
 @Mixin(RedStoneWireBlock.class)
 public abstract class RedStoneWireBlockMixin {
     @Shadow
@@ -40,11 +40,6 @@ public abstract class RedStoneWireBlockMixin {
     });
     
     @Shadow boolean shouldSignal;
-
-    public boolean isShouldSignal() {
-        return shouldSignal;
-    }
-
     @Redirect(method = "calculateTargetStrength(Lnet/minecraft/world/level/Level;Lnet/minecraft/core/BlockPos;)I",
             at = @At(value = "FIELD", target = "Lnet/minecraft/world/level/block/RedStoneWireBlock;shouldSignal:Z", opcode = Opcodes.PUTFIELD))
     private void injected(RedStoneWireBlock instance, boolean value) {
@@ -61,7 +56,6 @@ public abstract class RedStoneWireBlockMixin {
      */
     @Overwrite()
     private int getWireSignal(BlockState state) {
-        System.out.println("epic2");
         return state.is(PandaTechBlocks.COPPER_INFUSED_REDSTONE_WIRE.get()) ? state.getValue(CopperInfusedRedstoneWire.POWER) : state.is(Blocks.REDSTONE_WIRE) ? state.getValue(BlockStateProperties.POWER) : 0;
     }
     
