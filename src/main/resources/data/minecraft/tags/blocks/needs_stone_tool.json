@@ -1,0 +1,24 @@
+{
+  "replace": false,
+  "values": [
+    "panda_tech:raw_coal_block",
+    "panda_tech:raw_diamond_block",
+    "panda_tech:raw_emerald_block",
+    "panda_tech:raw_lapis_block",
+    "panda_tech:raw_redstone_block",
+    "panda_tech:raw_tin_block",
+    "panda_tech:raw_titanium_block",
+    "panda_tech:raw_zinc_block",
+    "panda_tech:raw_aluminium_block",
+    "panda_tech:raw_nickel_block",
+    "panda_tech:raw_cobalt_block",
+
+    "panda_tech:tin_ore",
+    "panda_tech:zinc_ore",
+    "panda_tech:nickel_ore",
+
+    "panda_tech:deepslate_tin_ore",
+    "panda_tech:deepslate_zinc_ore",
+    "panda_tech:deepslate_nickel_ore"
+  ]
+}

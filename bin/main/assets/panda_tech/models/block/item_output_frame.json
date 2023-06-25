@@ -1,0 +1,12 @@
+{
+  "parent": "block/cube",
+  "textures": {
+    "down": "panda_tech:block/frame_item_out_side",
+    "up": "panda_tech:block/frame_item_out_side",
+    "north": "panda_tech:block/frame_item_out_side",
+    "east": "panda_tech:block/frame_item_out_side",
+    "south": "panda_tech:block/frame_item_out_side",
+    "west": "panda_tech:block/frame_item_out_side",
+    "particle": "panda_tech:block/frame_blank"
+  }
+}

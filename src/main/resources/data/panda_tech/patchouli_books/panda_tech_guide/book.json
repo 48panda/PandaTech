@@ -1,0 +1,6 @@
+{
+  "name": "PandaTech guidebook",
+  "landing_text": "A guide on all the features in PandaTech!",
+  "version": 1,
+  "book_texture": "panda_tech:textures/book/book.png"
+}

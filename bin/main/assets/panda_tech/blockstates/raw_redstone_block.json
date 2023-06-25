@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "": {
+      "model": "panda_tech:block/raw_redstone_block"
+    }
+  }
+}

@@ -7,13 +7,13 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.EntityBlock;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.material.Material;
 import net.minecraft.world.level.storage.loot.LootContext;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
@@ -32,14 +32,14 @@ public class ElectricFurnaceBlock extends Machine implements EntityBlock {
     }
 
     @Override
-    public List<ItemStack> getDrops(BlockState state, LootContext.Builder p_60538_) {
+    public @NotNull List<ItemStack> getDrops(BlockState state, LootContext.@NotNull Builder p_60538_) {
         return super.getDrops(state, p_60538_);
     }
     
 
     @Nullable
     @Override
-    public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
+    public BlockEntity newBlockEntity(@NotNull BlockPos pos, @NotNull BlockState state) {
         return new ElectricFurnaceBlockEntity(pos, state);
     }
 }

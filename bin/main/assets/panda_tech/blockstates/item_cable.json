@@ -1,0 +1,78 @@
+{
+  "multipart": [
+  	{"when": {"north": "normal"},
+  		"apply": {
+  			"model": "panda_tech:custom/cable_part_item"
+  		}
+  	},
+  	{"when": {"east": "normal"},
+  		"apply": {
+  			"model": "panda_tech:custom/cable_part_item",
+  			"y":90
+  		}
+  	},
+  	{"when": {"south": "normal"},
+  		"apply": {
+  			"model": "panda_tech:custom/cable_part_item",
+  			"y":180
+  		}
+  	},
+  	{"when": {"west": "normal"},
+  		"apply": {
+  			"model": "panda_tech:custom/cable_part_item",
+  			"y":270
+  		}
+  	},
+  	{"when": {"up": "normal"},
+  		"apply": {
+  			"model": "panda_tech:custom/cable_part_item",
+  			"x":270
+  		}
+  	},
+  	{"when": {"down": "normal"},
+  		"apply": {
+  			"model": "panda_tech:custom/cable_part_item",
+  			"x":90
+  		}
+  	},{"when": {"north": "extract"},
+		  "apply": {
+			  "model": "panda_tech:custom/cable_extract_item"
+		  }
+	  },
+	  {"when": {"east": "extract"},
+		  "apply": {
+			  "model": "panda_tech:custom/cable_extract_item",
+			  "y":90
+		  }
+	  },
+	  {"when": {"south": "extract"},
+		  "apply": {
+			  "model": "panda_tech:custom/cable_extract_item",
+			  "y":180
+		  }
+	  },
+	  {"when": {"west": "extract"},
+		  "apply": {
+			  "model": "panda_tech:custom/cable_extract_item",
+			  "y":270
+		  }
+	  },
+	  {"when": {"up": "extract"},
+		  "apply": {
+			  "model": "panda_tech:custom/cable_extract_item",
+			  "x":270
+		  }
+	  },
+	  {"when": {"down": "extract"},
+		  "apply": {
+			  "model": "panda_tech:custom/cable_extract_item",
+			  "x":90
+		  }
+	  },
+  	{
+  		"apply": {
+  			"model": "panda_tech:custom/cable_core_item"
+  		}
+  	}
+  ]
+}

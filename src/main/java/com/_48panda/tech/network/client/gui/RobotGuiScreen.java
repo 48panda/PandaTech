@@ -1,6 +1,7 @@
 
 package com._48panda.tech.network.client.gui;
 
+import com._48panda.tech.network.RobotGuiButtonMessage;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.player.Inventory;
@@ -18,9 +19,9 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.systems.RenderSystem;
 
 import com._48panda.tech.world.inventory.RobotGuiMenu;
-import com._48panda.tech.network.RobotGuiButtonMessage;
 import com._48panda.tech.PandaTech;
 
+@SuppressWarnings("ALL")//Not used
 public class RobotGuiScreen extends AbstractContainerScreen<RobotGuiMenu> {
 	private final static HashMap<String, Object> guistate = RobotGuiMenu.guistate;
 	private final Level world;

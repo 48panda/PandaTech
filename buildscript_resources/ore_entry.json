@@ -1,0 +1,25 @@
+{
+  "name": "CAPITAL_ORE_NAME",
+  "icon": "INGOT_ID",
+  "category": "panda_tech:ores",
+  "pages": [
+    {
+      "type": "patchouli:spotlight",
+      "text": "CAPITAL_ORE_NAME Ore can be found naturally underground. Mining it will give you Raw CAPITAL_ORE_NAME.",
+      "title": "CAPITAL_ORE_NAME Ore",
+      "item": "RAW_ID",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "RAW_RECIPE",
+      "recipe2": "RAW_BLOCK_RECIPE"
+    },
+    {
+      "type": "panda_tech:pulveriser",
+      "input": "RAW_ID",
+      "output": "DUST_ID",
+      "title": "CAPITAL_ORE_NAME Dust"
+    }
+  ]
+}

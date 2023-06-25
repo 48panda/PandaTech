@@ -1,0 +1,31 @@
+{
+  "variants": {
+    "facing=north,has_multiblock=false": {
+      "model": "panda_tech:block/centrifuge"
+    },
+    "facing=east,has_multiblock=false": {
+      "model": "panda_tech:block/centrifuge",
+      "y": 90
+    },
+    "facing=south,has_multiblock=false": {
+      "model": "panda_tech:block/centrifuge",
+      "y": 180
+    },
+    "facing=west,has_multiblock=false": {
+      "model": "panda_tech:block/centrifuge",
+      "y": 270
+    },
+    "facing=north,has_multiblock=true": {
+      "model": "panda_tech:block/empty"
+    },
+    "facing=east,has_multiblock=true": {
+      "model": "panda_tech:block/empty"
+    },
+    "facing=south,has_multiblock=true": {
+      "model": "panda_tech:block/empty"
+    },
+    "facing=west,has_multiblock=true": {
+      "model": "panda_tech:block/empty"
+    }
+  }
+}

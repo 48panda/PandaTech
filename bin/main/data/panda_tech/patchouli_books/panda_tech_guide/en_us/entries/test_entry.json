@@ -1,0 +1,23 @@
+{
+  "name": "Ore Recipes",
+  "icon": "minecraft:crafting_table",
+  "category": "panda_tech:ores",
+  "pages": [
+    {
+      "type": "patchouli:spotlight",
+      "text": "Raw ores are the material you get when you break ore blocks. They each have a block form. Shown to the right are the recipes for the blocks.$(br2)NOTE: This recipe works for any raw ore there is, not just coal.",
+      "title": "Raw Ores",
+      "item": "panda_tech:raw_coal",
+      "link_recipe": true
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "panda_tech:raw_coal",
+      "recipe2": "panda_tech:raw_coal_block"
+    },
+    {
+      "type": "patchouli:multiblock",
+      "multiblock_id": "panda_tech:pulveriser"
+    }
+  ]
+}

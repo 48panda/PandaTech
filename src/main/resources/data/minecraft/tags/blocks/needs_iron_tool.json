@@ -1,0 +1,9 @@
+{
+  "replace": false,
+  "values": [
+    "panda_tech:titanium_ore",
+    "panda_tech:aluminium_ore",
+    "panda_tech:deepslate_titanium_ore",
+    "panda_tech:deepslate_aluminium_ore"
+  ]
+}

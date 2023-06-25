@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    {
+      "item": "RAW_BLOCK_ID"
+    }
+  ],
+  "result": {
+    "item": "RAW_ID",
+    "count": 9
+  }
+}
